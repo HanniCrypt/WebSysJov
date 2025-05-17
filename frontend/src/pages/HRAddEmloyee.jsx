@@ -68,87 +68,107 @@ const HRAddEmployee = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
-      {status !== null && (
-        <div
-          className={`p-4 mb-4 rounded ${
-            status ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-          }`}
-        >
-          {status ? "Employee added successfully" : "Failed to add employee"}
-        </div>
-      )}
-      <h2 className="text-2xl font-semibold text-[#260058] mb-6">
-        Add New Employee
-      </h2>
-      <form onSubmit={handleAddEmployee} className="space-y-5">
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">
-            Avatar
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#260058]"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">
-            Username
-          </label>
-          <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#260058]"
-            placeholder="Enter username"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#260058]"
-            placeholder="Enter password"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">
-            Department
-          </label>
-          <select
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            className="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#260058]"
-            required
+    <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+        {status !== null && (
+          <div
+            className={`p-5 mb-8 rounded-xl shadow-lg border-2 transform hover:scale-[1.01] transition-all duration-300 ${
+              status ? "bg-green-50 border-green-300 text-green-800" : "bg-red-50 border-red-300 text-red-800"
+            }`}
           >
-            <option value="">Select Department</option>
-            {departments.map((dept, i) => (
-              <option key={i} value={dept.dept_id}>
-                {dept.dept_name}
-              </option>
-            ))}
-          </select>
+            <div className="flex items-center gap-3">
+              {status ? (
+                <svg className="w-6 h-6 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+              <span className="text-base font-medium">
+                {status ? "Employee added successfully!" : "Failed to add employee"}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-[#260058] tracking-tight">
+            Add New Employee
+          </h2>
+          <p className="mt-2 text-gray-600">Create a new employee account with department</p>
         </div>
 
-        <div className="text-right">
-          <button
-            type="submit"
-            className="bg-[#260058] text-white px-5 py-2 rounded hover:bg-[#3e0091] transition"
-          >
-            Add Employee
-          </button>
-        </div>
-      </form>
+        <form onSubmit={handleAddEmployee} className="space-y-6">
+          <div className="space-y-3">
+            <label className="block text-sm font-semibold text-gray-700">
+              Avatar
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full px-4 py-3 text-base text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#260058] focus:border-transparent transition-all duration-200 hover:border-[#260058] file:mr-5 file:py-2.5 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 file:cursor-pointer"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-sm font-semibold text-gray-700">
+              Username
+            </label>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#260058] focus:border-transparent transition-all duration-200 hover:border-[#260058]"
+              placeholder="Enter username"
+              required
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-sm font-semibold text-gray-700">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#260058] focus:border-transparent transition-all duration-200 hover:border-[#260058]"
+              placeholder="Enter password"
+              required
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-sm font-semibold text-gray-700">
+              Department
+            </label>
+            <select
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#260058] focus:border-transparent transition-all duration-200 hover:border-[#260058] bg-white cursor-pointer"
+              required
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept, i) => (
+                <option key={i} value={dept.dept_id}>
+                  {dept.dept_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="pt-6">
+            <button
+              type="submit"
+              className="w-full px-8 py-3 text-base font-medium text-white bg-[#260058] hover:bg-[#3e0091] rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+            >
+              Add Employee
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

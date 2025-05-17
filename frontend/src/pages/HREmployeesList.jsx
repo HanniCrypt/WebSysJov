@@ -3,6 +3,63 @@ import React, { useEffect, useState } from "react";
 
 const API_URL = "http://localhost/emsystem/backend/index.php?action=";
 
+const CustomDropdown = ({ value, onChange, departments }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <div 
+        className="bg-white rounded-xl shadow-sm p-2 flex items-center gap-3 border border-gray-100 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="px-3 py-2 bg-gray-50 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3zm1 0v2.586l4.707 4.707A1 1 0 019 11v4.586l1-1V11a1 1 0 01.293-.707L15 5.586V3H4z" />
+          </svg>
+        </div>
+        <div className="min-w-[200px] px-3 py-2 text-sm text-gray-700 font-medium">
+          {value || "All Departments"}
+          <svg className="h-5 w-5 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </div>
+      </div>
+      
+      {isOpen && (
+        <>
+          <div 
+            className="fixed inset-0" 
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+            <div 
+              className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700"
+              onClick={() => {
+                onChange("");
+                setIsOpen(false);
+              }}
+            >
+              All Departments
+            </div>
+            {departments.map((dept) => (
+              <div
+                key={dept.dept_id}
+                className="px-4 py-2 cursor-pointer text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => {
+                  onChange(dept.dept_name);
+                  setIsOpen(false);
+                }}
+              >
+                {dept.dept_name}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 function HREmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -103,90 +160,86 @@ function HREmployeeList() {
   };
 
   return (
-    <div>
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4"> EMPLOYEES</h1>
-
-        <div className="flex justify-around">
-          <div className="mb-4">
-            <label htmlFor="departmentFilter" className="mr-2 font-semibold">
-              Filter by Department:
-            </label>
-            <select
-              id="departmentFilter"
-              value={selectedDepartment}
-              onChange={(e) => setSelectedDepartment(e.target.value)}
-              className="border px-2 py-1 rounded"
-            >
-              <option value="">All Departments</option>
-              {departments.map((dept) => (
-                <option key={dept.dept_id} value={dept.dept_name}>
-                  {dept.dept_name}
-                </option>
-              ))}
-            </select>
-          </div>
+    <div className="max-w-7xl mx-auto">
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Employee Management</h1>
+          <CustomDropdown
+            value={selectedDepartment}
+            onChange={setSelectedDepartment}
+            departments={departments}
+          />
         </div>
 
-        <table className="w-full border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2">avatar</th>
-              <th className="border p-2">user_id</th>
-              <th className="border p-2">username</th>
-              <th className="border p-2">Department</th>
-              <th className="border p-2">created_at</th>
-              <th className="border p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {employees?.filter(
-                (user) =>
-                  (selectedDepartment
-                    ? user.dept_name === selectedDepartment
-                    : true)
-              ).map((employee) => (
-              <tr key={employee.user_id}>
-                <td className="border p-2 ">
-                  <div className="flex justify-center items-center">
-                    {employee.avatar ? (
-                      <img
-                        src={`data:image/jpeg;base64,${employee.avatar}`}
-                        alt="Profile"
-                        className="w-16 h-16 rounded-full"
-                      />
-                    ) : (
-                      "No Avatar"
-                    )}
-                  </div>
-                </td>
-                <td className="border p-2">{employee.user_id}</td>
-                <td className="border p-2">{employee.username}</td>
-                <td className="border p-2">{employee?.dept_name}</td>
-                <td className="border p-2">{employee.created_at}</td>
-                <td className="border p-2 ">
-                  <div className="flex gap-5 items-center justify-center">
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600 cursor-pointer"
-                      onClick={() =>
-                        handleEditModal({ ...employee, password: "" })
-                      }
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
-                      onClick={() => handleDelete(employee.user_id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-100">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Avatar</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">ID</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Username</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Department</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Created At</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {employees?.filter(
+                    (user) =>
+                      (selectedDepartment
+                        ? user.dept_name === selectedDepartment
+                        : true)
+                  ).map((employee) => (
+                  <tr key={employee.user_id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center">
+                        {employee.avatar ? (
+                          <img
+                            src={`data:image/jpeg;base64,${employee.avatar}`}
+                            alt="Profile"
+                            className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-medium">
+                            NA
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{employee.user_id}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-700">{employee.username}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 font-medium">
+                        {employee?.dept_name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{employee.created_at}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <button
+                          className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                          onClick={() => handleEditModal({ ...employee, password: "" })}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                          onClick={() => handleDelete(employee.user_id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+
+      {/* Modal */}
       <div
         className={`fixed inset-0 z-50 flex items-center justify-center ${
           editModal ? "" : "hidden"
@@ -195,30 +248,29 @@ function HREmployeeList() {
         role="dialog"
       >
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity"
           onClick={() => setEditModal(false)}
           aria-hidden="true"
         />
-        <div className="relative z-50 w-full max-w-md rounded-lg bg-white p-6 shadow-lg ">
-          <h3 className="text-lg font-semibold ">Edit Employee</h3>
-          <form onSubmit={(e) => handleEditEmployee(e)} className="space-y-5">
+        <div className="relative z-50 w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-6">Edit Employee</h3>
+          <form onSubmit={(e) => handleEditEmployee(e)} className="space-y-6">
             <div>
-              <div className="w-24 h-24 text-md rounded-full border-4 border-white bg-gray-200 flex items-center justify-center text-white font-bold">
-                {selectedEmployee?.avatar ? (
-                  <img
-                    src={`data:image/jpeg;base64,${selectedEmployee?.avatar}`}
-                    alt="Avatar"
-                    className="rounded-full"
-                  />
-                ) : (
-                  "no avatar"
-                )}
+              <div className="mb-4 flex justify-center">
+                <div className="w-28 h-28 rounded-full border-4 border-gray-100 bg-gray-50 flex items-center justify-center overflow-hidden">
+                  {selectedEmployee?.avatar ? (
+                    <img
+                      src={`data:image/jpeg;base64,${selectedEmployee?.avatar}`}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-400">no avatar</span>
+                  )}
+                </div>
               </div>
-              <label
-                htmlFor="username"
-                className="block mb-1 font-medium text-gray-700"
-              >
-                Avatar
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Update Avatar
               </label>
               <input
                 type="file"
@@ -226,16 +278,12 @@ function HREmployeeList() {
                 id="avatar"
                 name="avatar"
                 onChange={handleFileChange}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#260058]"
-                placeholder="Enter Avatar"
+                className="w-full px-4 py-2 text-sm text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="username"
-                className="block mb-1 font-medium text-gray-700"
-              >
+              <label className="block mb-2 text-sm font-medium text-gray-700">
                 Username
               </label>
               <input
@@ -243,17 +291,14 @@ function HREmployeeList() {
                 name="username"
                 value={selectedEmployee?.username}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#260058]"
+                className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058]"
                 placeholder="Enter username"
                 required
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block mb-1 font-medium text-gray-700"
-              >
+              <label className="block mb-2 text-sm font-medium text-gray-700">
                 New Password
               </label>
               <input
@@ -262,30 +307,24 @@ function HREmployeeList() {
                 type="password"
                 value={selectedEmployee?.password}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#260058]"
-                placeholder=""
+                className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058]"
+                placeholder="Leave blank to keep current password"
               />
             </div>
 
             <div>
-              <label htmlFor="department" className="block mb-1 font-medium">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
                 Department
               </label>
-              <p className="text-sm text-gray-600">
-                Current Department:{" "}
-                <span className="font-medium">
-                  {departments.find((d) => d.dept_name === selectedEmployee?.dept_name)
-                    ?.dept_name || "Not Assigned"
-                    }
-                </span>
+              <p className="text-sm text-gray-500 mb-2">
+                Current: <span className="font-medium text-gray-900">{departments.find((d) => d.dept_name === selectedEmployee?.dept_name)?.dept_name || "Not Assigned"}</span>
               </p>
-
               <select
                 id="department"
                 name="dept_id"
                 value={selectedEmployee?.dept_id || ""}
                 onChange={handleChange}
-                className="w-full border rounded px-4 py-2 bg-white"
+                className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058] bg-white"
               >
                 <option value="">Select Department</option>
                 {departments.map((dept) => (
@@ -296,18 +335,19 @@ function HREmployeeList() {
               </select>
             </div>
 
-            <div className="mt-4 flex justify-end gap-2">
+            <div className="flex justify-end gap-3 pt-4">
               <button
+                type="button"
                 onClick={() => setEditModal(false)}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-400 border border-gray-300 text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-700 px-4 py-2"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-green-600 text-white hover:bg-green-500 dark:bg-green-600 dark:hover:bg-green-500 px-4 py-2"
+                className="px-4 py-2 text-sm font-medium text-white bg-[#260058] hover:bg-[#3e0091] rounded-lg transition-colors"
               >
-                Edit Now
+                Save Changes
               </button>
             </div>
           </form>
